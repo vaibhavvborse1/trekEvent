@@ -340,7 +340,6 @@ def add_trek_page(events):
             new_trek = {
                 "name": name,
                 "image": main_image_path,          # local main image
-                "gallery": gallery_paths,          # list of local gallery images
                 "location": location,
                 "date": date,
                 "difficulty": difficulty,
@@ -353,6 +352,7 @@ def add_trek_page(events):
                 "key_highlights": key_highlights.splitlines(),
                 "inclusions": inclusions.splitlines(),
                 "exclusions": exclusions.splitlines(),
+                "gallery": gallery_paths         # list of local gallery images
             }
 
             # Add to event list (or database)
@@ -576,6 +576,7 @@ hide_st_style = """
     </style>
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
+
 
 
 
