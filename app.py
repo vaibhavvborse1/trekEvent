@@ -492,23 +492,31 @@ if __name__ == "__main__":
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown("© 2025 Vedh Girishikhranche | Adventure Awaits 🌄", unsafe_allow_html=True)
 
-# ---- Hide Streamlit default UI (logo, menu, footer) ----
+# ---- Hide Streamlit logo, menu, and footer (safe for sidebar) ----
 hide_st_style = """
     <style>
+    /* Hide Streamlit main menu, footer, header */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     [data-testid="stDecoration"] {display: none;} /* Top ribbon */
     [data-testid="stStatusWidget"] {display: none;}
     [data-testid="stToolbar"] {display: none;}
-    [data-testid="stSidebarNav"] {margin-top: 20px;}
-    /* Hides logo area even on mobile */
-    section[data-testid="stSidebar"] div:nth-child(1) {
+
+    /* Optional: adjust sidebar spacing */
+    [data-testid="stSidebarNav"] {
+        margin-top: 20px;
+    }
+
+    /* Hide Streamlit logo only, not your sidebar */
+    [data-testid="stSidebarNav"] img {
         display: none !important;
     }
     </style>
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
+
+
 
 
 
