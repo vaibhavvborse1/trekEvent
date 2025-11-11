@@ -493,45 +493,23 @@ st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown("© 2025 Vedh Girishikhranche | Adventure Awaits 🌄", unsafe_allow_html=True)
 
 
-# ---- Hide Streamlit branding safely (works on mobile + keeps sidebar) ----
+# ---- Clean hide for Streamlit branding ----
 hide_st_style = """
     <style>
-    /* Hide Streamlit's default UI elements */
+    /* Hide Streamlit's default menu and footer text */
     #MainMenu {display: none;}
     footer {display: none;}
-    header {display: none;}
-    [data-testid="stToolbar"] {display: none !important;}
-    [data-testid="stDecoration"] {display: none !important;}
-    [data-testid="stStatusWidget"] {display: none !important;}
 
-    /* Hide "Made with Streamlit" footer logo in mobile overlays */
-    [data-testid="stSidebarOverlay"] [data-testid="stLogo"] {
-        display: none !important;
-    }
+    /* Hide Streamlit logo but keep header so toggle still works */
+    [data-testid="stLogo"] {display: none !important;}
 
-    /* Hide sidebar Streamlit logo safely */
-    [data-testid="stSidebar"] [data-testid="stLogo"] {
-        display: none !important;
-    }
-
-    /* Keep the sidebar always visible on desktop */
-    @media (min-width: 768px) {
-        [data-testid="stSidebar"] {
-            visibility: visible !important;
-            display: block !important;
-        }
-    }
-
-    /* Allow the mobile toggle sidebar to show when opened */
-    @media (max-width: 767px) {
-        [data-testid="stSidebar"] {
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
-    }
+    /* Optional: adjust spacing under the header */
+    [data-testid="stSidebarNav"] {margin-top: 1rem;}
     </style>
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
+
+
 
 
 
