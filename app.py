@@ -545,28 +545,28 @@ def add_trek_page(events):
             st.success(f"✅ Trek '{name}' added successfully!")
 
             # inside your add_trek_page after events.append(new_trek) and save_events(...)
-new_trek['id'] = make_trek_id(new_trek['name'])   # ensure ID saved
-assets = generate_marketing_pack(new_trek, main_image_path)
-
-st.success(f"✅ Trek '{name}' added successfully! Trek ID: {assets['trek_id']}")
-
-# Preview/Downloads
-st.subheader("Marketing Pack")
-st.image(assets['social'], caption="Auto social banner (download below)")
-
-with open(assets['pdf'], "rb") as f:
-    pdf_bytes = f.read()
-st.download_button("⬇️ Download Flyer (PDF)", data=pdf_bytes, file_name=f"{assets['trek_id']}_flyer.pdf", mime="application/pdf")
-
-with open(assets['social'], "rb") as f:
-    img_bytes = f.read()
-st.download_button("⬇️ Download Social Banner", data=img_bytes, file_name=f"{assets['trek_id']}_banner.png", mime="image/png")
-
-with open(assets['qr'], "rb") as f:
-    qr_bytes = f.read()
-st.download_button("⬇️ Download QR", data=qr_bytes, file_name=f"{assets['trek_id']}_qr.png", mime="image/png")
-
-st.text_area("Suggested Caption (copy & paste to social)", value=assets['caption'], height=140)
+            new_trek['id'] = make_trek_id(new_trek['name'])   # ensure ID saved
+            assets = generate_marketing_pack(new_trek, main_image_path)
+            
+            st.success(f"✅ Trek '{name}' added successfully! Trek ID: {assets['trek_id']}")
+            
+            # Preview/Downloads
+            st.subheader("Marketing Pack")
+            st.image(assets['social'], caption="Auto social banner (download below)")
+            
+            with open(assets['pdf'], "rb") as f:
+                pdf_bytes = f.read()
+            st.download_button("⬇️ Download Flyer (PDF)", data=pdf_bytes, file_name=f"{assets['trek_id']}_flyer.pdf", mime="application/pdf")
+            
+            with open(assets['social'], "rb") as f:
+                img_bytes = f.read()
+            st.download_button("⬇️ Download Social Banner", data=img_bytes, file_name=f"{assets['trek_id']}_banner.png", mime="image/png")
+            
+            with open(assets['qr'], "rb") as f:
+                qr_bytes = f.read()
+            st.download_button("⬇️ Download QR", data=qr_bytes, file_name=f"{assets['trek_id']}_qr.png", mime="image/png")
+            
+            st.text_area("Suggested Caption (copy & paste to social)", value=assets['caption'], height=140)
 
 
             # Show previews
@@ -786,6 +786,7 @@ hide_st_style = """
     </style>
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
+
 
 
 
