@@ -3,23 +3,6 @@ import json
 import os
 from copy import deepcopy
 
-# ---- Hide Streamlit default UI (logo, menu, footer) ----
-hide_st_style = """
-    <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    [data-testid="stDecoration"] {display: none;} /* Top ribbon */
-    [data-testid="stStatusWidget"] {display: none;}
-    [data-testid="stToolbar"] {display: none;}
-    [data-testid="stSidebarNav"] {margin-top: 20px;}
-    /* Hides logo area even on mobile */
-    section[data-testid="stSidebar"] div:nth-child(1) {
-        display: none !important;
-    }
-    </style>
-"""
-st.markdown(hide_st_style, unsafe_allow_html=True)
 
 
 # --------------------------------------------
@@ -504,9 +487,28 @@ def main():
 if __name__ == "__main__":
     main()
 
+
 # ---------------- Footer ----------------
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown("© 2025 Vedh Girishikhranche | Adventure Awaits 🌄", unsafe_allow_html=True)
+
+# ---- Hide Streamlit default UI (logo, menu, footer) ----
+hide_st_style = """
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    [data-testid="stDecoration"] {display: none;} /* Top ribbon */
+    [data-testid="stStatusWidget"] {display: none;}
+    [data-testid="stToolbar"] {display: none;}
+    [data-testid="stSidebarNav"] {margin-top: 20px;}
+    /* Hides logo area even on mobile */
+    section[data-testid="stSidebar"] div:nth-child(1) {
+        display: none !important;
+    }
+    </style>
+"""
+st.markdown(hide_st_style, unsafe_allow_html=True)
 
 
 
