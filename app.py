@@ -1,4 +1,4 @@
-import streamlit as st
+Fimport streamlit as st
 import json
 import os
 from copy import deepcopy
@@ -22,7 +22,7 @@ DEFAULT_EVENTS = [
         "difficulty": "Medium",
         "organiser": "Somesh H. Mahajan",
         "phone": "7558783213",
-        "price": "₹1,199.00/- For each person",
+        "price": "₹1,199.00/- For each person"
         "intro": "Hi adventure lovers, Offbeat Special Historical Range Trek To “DUKE’S NOSE TO UMBERKHIND” 🚩",
         "about_trek": "• *Duke’s Nose (Nagphani)*: A striking 1000 ft high pinnacle near Lonavala, shaped like a snake’s hood. A thrilling ascent with panoramic views!\n• *Umberkhind:* Historic battleground where Chhatrapati Shivaji Maharaj outwitted a larger Mughal force. A perfect blend of nature and Maratha history. Explore lush green trails and the Samarbhoomi Memorial.",
         "key_highlights": [
@@ -458,3 +458,4 @@ if __name__ == "__main__":
 # ---------------- Footer ----------------
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown("© 2025 Vedh Girishikhranche | Adventure Awaits 🌄", unsafe_allow_html=True)
+
