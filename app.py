@@ -224,7 +224,7 @@ def user_sidebar():
     </a>
     """,
     unsafe_allow_html=True
-))
+)
     st.sidebar.markdown("[Facebook](https://facebook.com)")
     if st.sidebar.button("Logout"):
         do_logout()
@@ -466,6 +466,7 @@ if __name__ == "__main__":
 # ---------------- Footer ----------------
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown("© 2025 Vedh Girishikhranche | Adventure Awaits 🌄", unsafe_allow_html=True)
+
 
 
 
