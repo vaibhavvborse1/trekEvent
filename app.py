@@ -4,6 +4,191 @@ import os
 from copy import deepcopy
 
 
+# helpers_marketing.py (paste into your app.py)
+import os
+import uuid
+import qrcode
+from PIL import Image, ImageDraw, ImageFont
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from io import BytesIO
+
+def make_trek_id(name: str) -> str:
+    short = "".join(ch for ch in name.lower() if ch.isalnum())[:12]
+    return f"{short}-{uuid.uuid4().hex[:6]}"
+
+def ensure_dirs(base="trek_assets"):
+    os.makedirs(base, exist_ok=True)
+    return base
+
+def generate_qr(data: str, out_path: str):
+    qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_H, box_size=6, border=2)
+    qr.add_data(data)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    img.save(out_path)
+    return out_path
+
+def create_social_banner(trek: dict, main_image_path: str, out_path: str, width=1200, height=630):
+    """
+    Simple social banner: main image as background (center-cropped), text overlay with trek name/date.
+    """
+    # open image and resize/center-crop
+    bg = Image.open(main_image_path).convert("RGBA")
+    # center crop to target aspect
+    src_w, src_h = bg.size
+    target_ratio = width / height
+    src_ratio = src_w / src_h
+    if src_ratio > target_ratio:
+        # crop width
+        new_w = int(target_ratio * src_h)
+        left = (src_w - new_w) // 2
+        bg = bg.crop((left, 0, left + new_w, src_h))
+    else:
+        # crop height
+        new_h = int(src_w / target_ratio)
+        top = (src_h - new_h) // 2
+        bg = bg.crop((0, top, src_w, top + new_h))
+    bg = bg.resize((width, height), Image.LANCZOS)
+
+    # overlay gradient for text contrast
+    overlay = Image.new("RGBA", (width, height), (0, 0, 0, 80))
+    combined = Image.alpha_composite(bg, overlay)
+
+    draw = ImageDraw.Draw(combined)
+    # choose a font. On many systems DejaVuSans is available; fallback if not.
+    try:
+        font_title = ImageFont.truetype("DejaVuSans-Bold.ttf", 48)
+        font_sub = ImageFont.truetype("DejaVuSans.ttf", 28)
+    except Exception:
+        font_title = ImageFont.load_default()
+        font_sub = ImageFont.load_default()
+
+    # write text: name (wrapped) and date
+    title = trek.get("name", "Untitled Trek")
+    date = trek.get("date", "")
+    # position text bottom-left
+    padding = 32
+    draw.text((padding, height - 140), title, font=font_title, fill=(255,255,255,255))
+    draw.text((padding, height - 80), date, font=font_sub, fill=(255,255,255,220))
+
+    # save as PNG
+    combined.convert("RGB").save(out_path, format="PNG", quality=90)
+    return out_path
+
+def create_flyer_pdf(trek: dict, main_image_path: str, qr_path: str, out_pdf_path: str):
+    """
+    Create a simple A4 PDF with main image on top, details below and QR code at corner.
+    """
+    c = canvas.Canvas(out_pdf_path, pagesize=A4)
+    W, H = A4
+
+    # place image at top (fit width)
+    try:
+        img = Image.open(main_image_path)
+        # fit image width to page minus margins
+        max_w = W - 80
+        w_ratio = max_w / img.width
+        new_w = max_w
+        new_h = img.height * w_ratio
+        # save a temp resized image to bytes
+        img_resized = img.resize((int(new_w), int(new_h)))
+        buf = BytesIO()
+        img_resized.save(buf, format="JPEG")
+        buf.seek(0)
+        c.drawImage(buf, 40, H - 40 - new_h, width=new_w, height=new_h)
+    except Exception:
+        # ignore if image fails, continue
+        pass
+
+    # details text below image
+    y = H - 60 - new_h if 'new_h' in locals() else H - 120
+    text_x = 40
+    y -= 40
+    c.setFont("Helvetica-Bold", 18)
+    c.drawString(text_x, y, trek.get("name", "Untitled Trek"))
+    y -= 26
+    c.setFont("Helvetica", 12)
+    c.drawString(text_x, y, f"Date: {trek.get('date','')}")
+    y -= 18
+    c.drawString(text_x, y, f"Location: {trek.get('location','')}")
+    y -= 18
+    c.drawString(text_x, y, f"Price: {trek.get('price','')}")
+    y -= 22
+
+    # draw a short intro paragraph (wrap lines)
+    intro = trek.get("intro", "")
+    from textwrap import wrap
+    lines = wrap(intro, 90)
+    for line in lines[:6]:
+        y -= 16
+        c.drawString(text_x, y, line)
+
+    # draw QR at bottom-right
+    try:
+        qr_img = Image.open(qr_path)
+        qr_w = 120
+        qr_h = 120
+        qr_buf = BytesIO()
+        qr_img.resize((qr_w, qr_h)).save(qr_buf, format="PNG")
+        qr_buf.seek(0)
+        c.drawImage(qr_buf, W - 40 - qr_w, 40, width=qr_w, height=qr_h)
+        c.setFont("Helvetica", 9)
+        c.drawString(W - 40 - qr_w, 40 + qr_h + 6, "Scan for details / registration")
+    except Exception:
+        pass
+
+    c.showPage()
+    c.save()
+    return out_pdf_path
+
+def generate_caption_and_hashtags(trek: dict):
+    """
+    Simple caption template generator for social posts.
+    """
+    name = trek.get("name","Untitled Trek")
+    date = trek.get("date","")
+    location = trek.get("location","")
+    price = trek.get("price","")
+    caption = (f"🌄 {name} — {date}\n"
+               f"📍 {location}\n"
+               f"💰 {price}\n\n"
+               "Join us for an unforgettable adventure! Limited spots — DM to book. 🥾\n\n"
+               "#trekking #hiking #maharashtra #adventure #weekendgetaway")
+    return caption
+
+def generate_marketing_pack(trek: dict, main_image_path: str, base_dir="trek_assets"):
+    """
+    Orchestrator: returns dict with file paths for assets.
+    """
+    ensure_dirs(base_dir)
+    trek_id = trek.get("id") or make_trek_id(trek.get("name","trek"))
+    trek_dir = os.path.join(base_dir, trek_id)
+    os.makedirs(trek_dir, exist_ok=True)
+
+    # QR target: you can change this to your public trek page URL when deployed
+    qr_data = f"TREK:{trek_id}|NAME:{trek.get('name','')}"
+    qr_path = os.path.join(trek_dir, "qr.png")
+    generate_qr(qr_data, qr_path)
+
+    # Social banner
+    social_path = os.path.join(trek_dir, "social.png")
+    create_social_banner(trek, main_image_path, social_path)
+
+    # PDF flyer
+    pdf_path = os.path.join(trek_dir, "flyer.pdf")
+    create_flyer_pdf(trek, main_image_path, qr_path, pdf_path)
+
+    caption = generate_caption_and_hashtags(trek)
+
+    return {
+        "trek_id": trek_id,
+        "dir": trek_dir,
+        "qr": qr_path,
+        "social": social_path,
+        "pdf": pdf_path,
+        "caption": caption
+    }
 
 # --------------------------------------------
 # CONFIGURATION
@@ -359,6 +544,31 @@ def add_trek_page(events):
             events.append(new_trek)
             st.success(f"✅ Trek '{name}' added successfully!")
 
+            # inside your add_trek_page after events.append(new_trek) and save_events(...)
+new_trek['id'] = make_trek_id(new_trek['name'])   # ensure ID saved
+assets = generate_marketing_pack(new_trek, main_image_path)
+
+st.success(f"✅ Trek '{name}' added successfully! Trek ID: {assets['trek_id']}")
+
+# Preview/Downloads
+st.subheader("Marketing Pack")
+st.image(assets['social'], caption="Auto social banner (download below)")
+
+with open(assets['pdf'], "rb") as f:
+    pdf_bytes = f.read()
+st.download_button("⬇️ Download Flyer (PDF)", data=pdf_bytes, file_name=f"{assets['trek_id']}_flyer.pdf", mime="application/pdf")
+
+with open(assets['social'], "rb") as f:
+    img_bytes = f.read()
+st.download_button("⬇️ Download Social Banner", data=img_bytes, file_name=f"{assets['trek_id']}_banner.png", mime="image/png")
+
+with open(assets['qr'], "rb") as f:
+    qr_bytes = f.read()
+st.download_button("⬇️ Download QR", data=qr_bytes, file_name=f"{assets['trek_id']}_qr.png", mime="image/png")
+
+st.text_area("Suggested Caption (copy & paste to social)", value=assets['caption'], height=140)
+
+
             # Show previews
             if main_image_path:
                 st.image(main_image_path, caption="Main Trek Image", use_container_width=True)
@@ -576,6 +786,7 @@ hide_st_style = """
     </style>
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
+
 
 
 
