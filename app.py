@@ -1,4 +1,4 @@
-Fimport streamlit as st
+import streamlit as st
 import json
 import os
 from copy import deepcopy
@@ -466,6 +466,7 @@ if __name__ == "__main__":
 # ---------------- Footer ----------------
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown("© 2025 Vedh Girishikhranche | Adventure Awaits 🌄", unsafe_allow_html=True)
+
 
 
 
