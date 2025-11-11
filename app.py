@@ -403,10 +403,10 @@ def manage_treks_page(events):
                 st.markdown("**Intro:**")
                 st.write(trek.get("intro",""))
             with col2:
-                if st.button(f"Edit #{idx}", key=f"edit_{idx}"):
+                if st.button(f"Edit {idx}", key=f"edit_{idx}"):
                     st.session_state["edit_index"] = idx
                     st.rerun()
-                if st.button(f"Delete #{idx}", key=f"delete_{idx}"):
+                if st.button(f"Delete {idx}", key=f"delete_{idx}"):
                     st.session_state["pending_delete"] = idx
                     st.rerun()
 
@@ -576,6 +576,7 @@ hide_st_style = """
     </style>
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
+
 
 
 
