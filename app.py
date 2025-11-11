@@ -281,23 +281,68 @@ def admin_dashboard(events):
 
 def add_trek_page(events):
     st.header("➕ Add New Trek")
+
     with st.form("add_trek_form", clear_on_submit=True):
-        name = st.text_input("Trek Name")
-        image = st.text_input("Main Image URL")
-        location = st.text_input("Location")
-        date = st.text_input("Date")
-        difficulty = st.selectbox("Difficulty", ["Easy", "Medium", "Hard"])
-        organiser = st.text_input("Organiser")
-        phone = st.text_input("Phone (digits only)")
-        price = st.text_input("Price / Cost")
-        intro = st.text_area("Intro (short)")
-        about_trek = st.text_area("About Trek (long)")
-        detailed_schedule = st.text_area("Detailed Schedule (markdown allowed)")
-        key_highlights = st.text_area("Key Highlights (one per line)")
-        inclusions = st.text_area("Inclusions (one per line)")
-        exclusions = st.text_area("Exclusions (one per line)")
-        gallery = st.text_area("Gallery image URLs (one per line)")
+        name = st.text_input("🏔 Trek Name")
+
+        # 🖼 Replace image URL with file upload (works on phone gallery too)
+        uploaded_image = st.file_uploader("🖼 Upload Main Image", type=["jpg", "jpeg", "png"])
+
+        location = st.text_input("📍 Location")
+        date = st.text_input("📅 Date")
+        difficulty = st.selectbox("⚡ Difficulty", ["Easy", "Medium", "Hard"])
+        organiser = st.text_input("👥 Organiser")
+        phone = st.text_input("📞 Phone (digits only)")
+        price = st.text_input("💰 Price / Cost")
+        intro = st.text_area("📝 Intro (short)")
+        about_trek = st.text_area("📖 About Trek (long)")
+        detailed_schedule = st.text_area("🗓️ Detailed Schedule (markdown allowed)")
+        key_highlights = st.text_area("⭐ Key Highlights (one per line)")
+        inclusions = st.text_area("✅ Inclusions (one per line)")
+        exclusions = st.text_area("❌ Exclusions (one per line)")
+        gallery = st.text_area("🖼 Gallery image URLs (one per line)")
+        
         submitted = st.form_submit_button("Add Trek")
+
+        if submitted:
+            if not name or not location or not date:
+                st.warning("⚠️ Please fill in all required fields: Name, Location, Date.")
+                return
+
+            # Save uploaded image
+            image_path = None
+            if uploaded_image:
+                os.makedirs("trek_images", exist_ok=True)
+                image_path = os.path.join("trek_images", uploaded_image.name)
+                with open(image_path, "wb") as f:
+                    f.write(uploaded_image.getbuffer())
+
+            # Create trek dictionary
+            new_trek = {
+                "name": name,
+                "image": image_path if image_path else None,  # store local image path
+                "location": location,
+                "date": date,
+                "difficulty": difficulty,
+                "organiser": organiser,
+                "phone": phone,
+                "price": price,
+                "intro": intro,
+                "about_trek": about_trek,
+                "detailed_schedule": detailed_schedule,
+                "key_highlights": key_highlights.splitlines(),
+                "inclusions": inclusions.splitlines(),
+                "exclusions": exclusions.splitlines(),
+                "gallery": gallery.splitlines(),
+            }
+
+            # Add to events list (or DB)
+            events.append(new_trek)
+            st.success(f"✅ Trek '{name}' added successfully!")
+
+            # Show uploaded image preview
+            if image_path:
+                st.image(image_path, caption="Main Trek Image", use_container_width=True)
         if submitted:
             new = {
                 "name": name,
@@ -508,6 +553,7 @@ hide_st_style = """
     </style>
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
+
 
 
 
