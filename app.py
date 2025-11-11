@@ -492,29 +492,8 @@ if __name__ == "__main__":
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown("© 2025 Vedh Girishikhranche | Adventure Awaits 🌄", unsafe_allow_html=True)
 
-# ---- Safe CSS: Hide Streamlit logo, menu, footer ----
-hide_st_style = """
-    <style>
-    /* Hide Streamlit default elements */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    [data-testid="stDecoration"] {display: none;}
-    [data-testid="stStatusWidget"] {display: none;}
-    [data-testid="stToolbar"] {display: none;}
 
-    /* Remove Streamlit's small logo image only */
-    [data-testid="stSidebarNav"] img {
-        display: none !important;
-    }
 
-    /* Adjust sidebar spacing if needed */
-    [data-testid="stSidebarNav"] {
-        margin-top: 15px;
-    }
-    </style>
-"""
-st.markdown(hide_st_style, unsafe_allow_html=True)
 
 
 
