@@ -2,6 +2,13 @@ import streamlit as st
 import json
 import os
 from copy import deepcopy
+import os
+import uuid
+import qrcode
+from PIL import Image, ImageDraw, ImageFont
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from io import BytesIO
 
 
 # helpers_marketing.py (paste into your app.py)
@@ -786,6 +793,7 @@ hide_st_style = """
     </style>
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
+
 
 
 
