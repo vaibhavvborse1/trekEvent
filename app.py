@@ -279,14 +279,22 @@ def admin_dashboard(events):
     show_trek_cards(events[:4])
 
 
+
 def add_trek_page(events):
     st.header("➕ Add New Trek")
 
     with st.form("add_trek_form", clear_on_submit=True):
         name = st.text_input("🏔 Trek Name")
 
-        # 🖼 Replace image URL with file upload (works on phone gallery too)
-        uploaded_image = st.file_uploader("🖼 Upload Main Image", type=["jpg", "jpeg", "png"])
+        # 🖼 Main Image Upload (works on mobile gallery/camera)
+        main_image = st.file_uploader("🖼 Upload Main Image", type=["jpg", "jpeg", "png"])
+
+        # 🖼 Multiple Gallery Image Uploads
+        gallery_images = st.file_uploader(
+            "📸 Upload Gallery Images (multiple allowed)",
+            type=["jpg", "jpeg", "png"],
+            accept_multiple_files=True
+        )
 
         location = st.text_input("📍 Location")
         date = st.text_input("📅 Date")
@@ -300,7 +308,6 @@ def add_trek_page(events):
         key_highlights = st.text_area("⭐ Key Highlights (one per line)")
         inclusions = st.text_area("✅ Inclusions (one per line)")
         exclusions = st.text_area("❌ Exclusions (one per line)")
-        gallery = st.text_area("🖼 Gallery image URLs (one per line)")
         
         submitted = st.form_submit_button("Add Trek")
 
@@ -309,18 +316,31 @@ def add_trek_page(events):
                 st.warning("⚠️ Please fill in all required fields: Name, Location, Date.")
                 return
 
-            # Save uploaded image
-            image_path = None
-            if uploaded_image:
-                os.makedirs("trek_images", exist_ok=True)
-                image_path = os.path.join("trek_images", uploaded_image.name)
-                with open(image_path, "wb") as f:
-                    f.write(uploaded_image.getbuffer())
+            # 📂 Ensure folders exist
+            os.makedirs("trek_images/main", exist_ok=True)
+            os.makedirs("trek_images/gallery", exist_ok=True)
 
-            # Create trek dictionary
+            # Save main image
+            main_image_path = None
+            if main_image:
+                main_image_path = os.path.join("trek_images/main", main_image.name)
+                with open(main_image_path, "wb") as f:
+                    f.write(main_image.getbuffer())
+
+            # Save gallery images
+            gallery_paths = []
+            if gallery_images:
+                for img in gallery_images:
+                    img_path = os.path.join("trek_images/gallery", img.name)
+                    with open(img_path, "wb") as f:
+                        f.write(img.getbuffer())
+                    gallery_paths.append(img_path)
+
+            # Create trek data dictionary
             new_trek = {
                 "name": name,
-                "image": image_path if image_path else None,  # store local image path
+                "image": main_image_path,          # local main image
+                "gallery": gallery_paths,          # list of local gallery images
                 "location": location,
                 "date": date,
                 "difficulty": difficulty,
@@ -333,16 +353,19 @@ def add_trek_page(events):
                 "key_highlights": key_highlights.splitlines(),
                 "inclusions": inclusions.splitlines(),
                 "exclusions": exclusions.splitlines(),
-                "gallery": gallery.splitlines(),
             }
 
-            # Add to events list (or DB)
+            # Add to event list (or database)
             events.append(new_trek)
             st.success(f"✅ Trek '{name}' added successfully!")
 
-            # Show uploaded image preview
-            if image_path:
-                st.image(image_path, caption="Main Trek Image", use_container_width=True)
+            # Show previews
+            if main_image_path:
+                st.image(main_image_path, caption="Main Trek Image", use_container_width=True)
+
+            if gallery_paths:
+                st.subheader("📸 Gallery Preview")
+                st.image(gallery_paths, width=200)
         if submitted:
             new = {
                 "name": name,
@@ -553,6 +576,7 @@ hide_st_style = """
     </style>
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
+
 
 
 
