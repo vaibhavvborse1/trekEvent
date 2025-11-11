@@ -218,10 +218,32 @@ def user_sidebar():
     st.sidebar.markdown("### 🔗 Follow Us On")
     st.sidebar.markdown(
     """
+    <style>
+    .social-icons {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        justify-content: flex-start;
+        margin-top: 5px;
+    }
+    .social-icons img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 5px rgba(255,255,255,0.3);
+    }
+    .social-icons img:hover {
+        transform: scale(1.2);
+        box-shadow: 0 0 12px rgba(255, 100, 180, 0.8);
+    }
+    </style>
+    <div class="social-icons">
     <a href="https://www.instagram.com/vedh_girishikharanche/" target="_blank" style="text-decoration:none;">
         <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" width="25" style="vertical-align:middle; margin-right:8px;">
         <span style="font-size:16px; color:white; vertical-align:middle;">Instagram</span>
     </a>
+    </div>
     """,
     unsafe_allow_html=True
 )
@@ -466,6 +488,7 @@ if __name__ == "__main__":
 # ---------------- Footer ----------------
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown("© 2025 Vedh Girishikhranche | Adventure Awaits 🌄", unsafe_allow_html=True)
+
 
 
 
