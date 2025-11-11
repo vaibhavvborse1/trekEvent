@@ -215,8 +215,16 @@ def user_sidebar():
         ["🚩 Maharashtra Treks", "🌍 Outside Maharashtra", "📷 Gallery", "📞 Contact"]
     )
     st.sidebar.markdown("---")
-    st.sidebar.markdown("### 🔗 Follow Us")
-    st.sidebar.markdown("[Instagram](https://www.instagram.com/vedh_girishikharanche/)")
+    st.sidebar.markdown("### 🔗 Follow Us On")
+    st.sidebar.markdown(st.sidebar.markdown(
+    """
+    <a href="https://www.instagram.com/vedh_girishikharanche/" target="_blank" style="text-decoration:none;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" width="25" style="vertical-align:middle; margin-right:8px;">
+        <span style="font-size:16px; color:white; vertical-align:middle;">Instagram</span>
+    </a>
+    """,
+    unsafe_allow_html=True
+))
     st.sidebar.markdown("[Facebook](https://facebook.com)")
     if st.sidebar.button("Logout"):
         do_logout()
@@ -458,4 +466,5 @@ if __name__ == "__main__":
 # ---------------- Footer ----------------
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown("© 2025 Vedh Girishikhranche | Adventure Awaits 🌄", unsafe_allow_html=True)
+
 
