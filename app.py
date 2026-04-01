@@ -356,6 +356,29 @@ new_trek = {
     "images": gallery_paths if gallery_paths else []   # ✅ use "images" everywhere
 }
 
+with st.form("add_trek_form", clear_on_submit=True):
+    name = st.text_input("🏔 Trek Name")
+    location = st.text_input("📍 Location")
+    date = st.text_input("📅 Date")
+
+    submitted = st.form_submit_button("Add Trek")
+
+    if submitted:
+        if not name or not location or not date:
+            st.warning("⚠️ Fill all required fields")
+        else:
+            new_trek = {
+                "name": name,
+                "location": location,
+                "date": date
+            }
+
+            events.append(new_trek)
+            save_events(events)
+
+            st.success("✅ Trek added successfully")
+            st.rerun()
+
 # Add to event list
 events.append(new_trek)
 
