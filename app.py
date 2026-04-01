@@ -338,6 +338,8 @@ def add_trek_page(events):
                     gallery_paths.append(img_path)
 
            # Create trek data dictionary
+if submitted:
+
 new_trek = {
     "name": name,
     "image": main_image_path if main_image_path else "",
@@ -363,7 +365,6 @@ with st.form("add_trek_form", clear_on_submit=True):
 
     submitted = st.form_submit_button("Add Trek")
 
-    if submitted:
         if not name or not location or not date:
             st.warning("⚠️ Fill all required fields")
         else:
