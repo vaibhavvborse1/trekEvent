@@ -338,7 +338,6 @@ def add_trek_page(events):
                     gallery_paths.append(img_path)
 
            # Create trek data dictionary
-if submitted:
 
 new_trek = {
     "name": name,
@@ -356,7 +355,7 @@ new_trek = {
     "inclusions": [s.strip() for s in inclusions.splitlines() if s.strip()],
     "exclusions": [s.strip() for s in exclusions.splitlines() if s.strip()],
     "images": gallery_paths if gallery_paths else []   # ✅ use "images" everywhere
-}
+
 
 with st.form("add_trek_form", clear_on_submit=True):
     name = st.text_input("🏔 Trek Name")
@@ -379,7 +378,7 @@ with st.form("add_trek_form", clear_on_submit=True):
 
             st.success("✅ Trek added successfully")
             st.rerun()
-
+}
 # Add to event list
 events.append(new_trek)
 
