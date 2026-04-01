@@ -337,58 +337,44 @@ def add_trek_page(events):
                         f.write(img.getbuffer())
                     gallery_paths.append(img_path)
 
-            # Create trek data dictionary
-            new_trek = {
-                "name": name,
-                "image": main_image_path,          # local main image
-                "location": location,
-                "date": date,
-                "difficulty": difficulty,
-                "organiser": organiser,
-                "phone": phone,
-                "price": price,
-                "intro": intro,
-                "about_trek": about_trek,
-                "detailed_schedule": detailed_schedule,
-                "key_highlights": key_highlights.splitlines(),
-                "inclusions": inclusions.splitlines(),
-                "exclusions": exclusions.splitlines(),
-                "gallery": gallery_paths         # list of local gallery images
-            }
+           # Create trek data dictionary
+new_trek = {
+    "name": name,
+    "image": main_image_path if main_image_path else "",
+    "location": location,
+    "date": date,
+    "difficulty": difficulty,
+    "organiser": organiser,
+    "phone": phone,
+    "price": price,
+    "intro": intro,
+    "about_trek": about_trek,
+    "detailed_schedule": detailed_schedule,
+    "key_highlights": [s.strip() for s in key_highlights.splitlines() if s.strip()],
+    "inclusions": [s.strip() for s in inclusions.splitlines() if s.strip()],
+    "exclusions": [s.strip() for s in exclusions.splitlines() if s.strip()],
+    "images": gallery_paths if gallery_paths else []   # ✅ use "images" everywhere
+}
 
-            # Add to event list (or database)
-            events.append(new_trek)
-            st.success(f"✅ Trek '{name}' added successfully!")
+# Add to event list
+events.append(new_trek)
 
-            # Show previews
-            if main_image_path:
-                st.image(main_image_path, caption="Main Trek Image", use_container_width=True)
+# Save to JSON
+save_events(events)
 
-            if gallery_paths:
-                st.subheader("📸 Gallery Preview")
-                st.image(gallery_paths, width=200)
-        if submitted:
-            new = {
-                "name": name,
-                "image": image,
-                "location": location,
-                "date": date,
-                "difficulty": difficulty,
-                "organiser": organiser,
-                "phone": phone,
-                "price": price,
-                "intro": intro,
-                "about_trek": about_trek,
-                "detailed_schedule": detailed_schedule,
-                "key_highlights": [s.strip() for s in key_highlights.splitlines() if s.strip()],
-                "inclusions": [s.strip() for s in inclusions.splitlines() if s.strip()],
-                "exclusions": [s.strip() for s in exclusions.splitlines() if s.strip()],
-                "images": [s.strip() for s in gallery.splitlines() if s.strip()]
-            }
-            events.append(new)
-            save_events(events)
-            st.success("Trek added successfully")
-            st.rerun()
+# Success message
+st.success(f"✅ Trek '{name}' added successfully!")
+
+# Show previews
+if main_image_path:
+    st.image(main_image_path, caption="Main Trek Image", use_container_width=True)
+
+if gallery_paths:
+    st.subheader("📸 Gallery Preview")
+    st.image(gallery_paths, width=200)
+
+# Refresh app
+st.rerun()
 
 
 def manage_treks_page(events):
