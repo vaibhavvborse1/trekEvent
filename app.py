@@ -287,10 +287,8 @@ def add_trek_page(events):
     with st.form("add_trek_form", clear_on_submit=True):
         name = st.text_input("🏔 Trek Name")
 
-        # 🖼 Main Image Upload (works on mobile gallery/camera)
         main_image = st.file_uploader("🖼 Upload Main Image", type=["jpg", "jpeg", "png"])
 
-        # 🖼 Multiple Gallery Image Uploads
         gallery_images = st.file_uploader(
             "📸 Upload Gallery Images (multiple allowed)",
             type=["jpg", "jpeg", "png"],
@@ -305,100 +303,75 @@ def add_trek_page(events):
         price = st.text_input("💰 Price / Cost")
         intro = st.text_area("📝 Intro (short)")
         about_trek = st.text_area("📖 About Trek (long)")
-        detailed_schedule = st.text_area("🗓️ Detailed Schedule (markdown allowed)")
+        detailed_schedule = st.text_area("🗓️ Detailed Schedule")
         key_highlights = st.text_area("⭐ Key Highlights (one per line)")
         inclusions = st.text_area("✅ Inclusions (one per line)")
         exclusions = st.text_area("❌ Exclusions (one per line)")
-        
+
         submitted = st.form_submit_button("Add Trek")
 
-        if submitted:
-            if not name or not location or not date:
-                st.warning("⚠️ Please fill in all required fields: Name, Location, Date.")
-                return
-
-            # 📂 Ensure folders exist
-            os.makedirs("trek_images/main", exist_ok=True)
-            os.makedirs("trek_images/gallery", exist_ok=True)
-
-            # Save main image
-            main_image_path = None
-            if main_image:
-                main_image_path = os.path.join("trek_images/main", main_image.name)
-                with open(main_image_path, "wb") as f:
-                    f.write(main_image.getbuffer())
-
-            # Save gallery images
-            gallery_paths = []
-            if gallery_images:
-                for img in gallery_images:
-                    img_path = os.path.join("trek_images/gallery", img.name)
-                    with open(img_path, "wb") as f:
-                        f.write(img.getbuffer())
-                    gallery_paths.append(img_path)
-
-           # Create trek data dictionary
-
-new_trek = {
-    "name": name,
-    "image": main_image_path if main_image_path else "",
-    "location": location,
-    "date": date,
-    "difficulty": difficulty,
-    "organiser": organiser,
-    "phone": phone,
-    "price": price,
-    "intro": intro,
-    "about_trek": about_trek,
-    "detailed_schedule": detailed_schedule,
-    "key_highlights": [s.strip() for s in key_highlights.splitlines() if s.strip()],
-    "inclusions": [s.strip() for s in inclusions.splitlines() if s.strip()],
-    "exclusions": [s.strip() for s in exclusions.splitlines() if s.strip()],
-    "images": gallery_paths if gallery_paths else []   # ✅ use "images" everywhere
-
-
-with st.form("add_trek_form", clear_on_submit=True):
-    name = st.text_input("🏔 Trek Name")
-    location = st.text_input("📍 Location")
-    date = st.text_input("📅 Date")
-
-    submitted = st.form_submit_button("Add Trek")
+    # 👉 OUTSIDE form but controlled by submitted
+    if submitted:
 
         if not name or not location or not date:
-            st.warning("⚠️ Fill all required fields")
-        else:
-            new_trek = {
-                "name": name,
-                "location": location,
-                "date": date
-            }
+            st.warning("⚠️ Please fill Name, Location, and Date")
+            return
 
-            events.append(new_trek)
-            save_events(events)
+        # Create folders
+        os.makedirs("trek_images/main", exist_ok=True)
+        os.makedirs("trek_images/gallery", exist_ok=True)
 
-            st.success("✅ Trek added successfully")
-            st.rerun()
-}
-# Add to event list
-events.append(new_trek)
+        # Save main image
+        main_image_path = ""
+        if main_image:
+            main_image_path = os.path.join("trek_images/main", main_image.name)
+            with open(main_image_path, "wb") as f:
+                f.write(main_image.getbuffer())
 
-# Save to JSON
-save_events(events)
+        # Save gallery images
+        gallery_paths = []
+        if gallery_images:
+            for img in gallery_images:
+                img_path = os.path.join("trek_images/gallery", img.name)
+                with open(img_path, "wb") as f:
+                    f.write(img.getbuffer())
+                gallery_paths.append(img_path)
 
-# Success message
-st.success(f"✅ Trek '{name}' added successfully!")
+        # Create trek object
+        new_trek = {
+            "name": name,
+            "image": main_image_path,
+            "location": location,
+            "date": date,
+            "difficulty": difficulty,
+            "organiser": organiser,
+            "phone": phone,
+            "price": price,
+            "intro": intro,
+            "about_trek": about_trek,
+            "detailed_schedule": detailed_schedule,
+            "key_highlights": [s.strip() for s in key_highlights.splitlines() if s.strip()],
+            "inclusions": [s.strip() for s in inclusions.splitlines() if s.strip()],
+            "exclusions": [s.strip() for s in exclusions.splitlines() if s.strip()],
+            "images": gallery_paths
+        }
 
-# Show previews
-if main_image_path:
-    st.image(main_image_path, caption="Main Trek Image", use_container_width=True)
+        # Save data
+        events.append(new_trek)
+        save_events(events)
 
-if gallery_paths:
-    st.subheader("📸 Gallery Preview")
-    st.image(gallery_paths, width=200)
+        # Success message
+        st.success(f"✅ Trek '{name}' added successfully!")
 
-# Refresh app
-st.rerun()
+        # Preview
+        if main_image_path:
+            st.image(main_image_path, caption="Main Image", use_container_width=True)
 
+        if gallery_paths:
+            st.subheader("📸 Gallery Preview")
+            st.image(gallery_paths, width=200)
+
+        st.rerun()
 
 def manage_treks_page(events):
     st.header("📋 Manage Treks")
